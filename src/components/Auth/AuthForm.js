@@ -1,12 +1,17 @@
-import { useState, useRef } from "react";
-
+import { useState, useRef, useContext } from "react";
 import classes from "./AuthForm.module.css";
+import { AuthContext } from "../../context/AuthContext";
 
 const AuthForm = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [error, setError] = useState("");
     const emailRef = useRef();
     const passwordRef = useRef();
+    const authContext = useContext(AuthContext);
+
+    if (authContext.token) {
+        return <div>Logged in!</div>;
+    }
 
     const switchAuthModeHandler = () => {
         setIsLogin((prevState) => !prevState);
@@ -58,7 +63,7 @@ const AuthForm = () => {
             console.log(data.error.message);
             throw new Error("Auth server error.");
         }
-        console.log(data);
+        authContext.login(data.idToken, data.email, data.expiresIn);
     };
 
     return (
